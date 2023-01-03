@@ -24,14 +24,15 @@ public class DataSource {
   }
 
   public static Customer getCustomer (String username){
-    String sql = "select * from customers where username = ?";
+    String sql = "select * from Customers where username = ?";
     Customer customer = null;
 
 
     try(Connection connection = connect();
         PreparedStatement statement = connection.prepareStatement(sql)){
 
-          statement.setString(0, username);
+          statement.setString(1, username);
+
           try(ResultSet resultSet = statement.executeQuery()){
             customer = new Customer(
               resultSet.getInt("id"),
@@ -48,9 +49,36 @@ public class DataSource {
     return customer;
   }
 
+  public static Account getAccount(int accountId){
+    String sql = "select * from Accounts where id = ?";
+    Account account = null;
+
+    try (Connection connection = connect();
+        PreparedStatement statement = connection.prepareStatement(sql)) {
+
+      statement.setInt(1, id);
+
+      try (ResultSet resultSet = statement.executeQuery()) {
+        account = new Account(
+            resultSet.getInt("id"),
+            resultSet.getString("type"),
+            resultSet.getDouble("balance"));
+      }
+
+    } catch (SQLException e) {
+      e.printStackTrace();
+    }
+
+    return account;
+
+  }
+
   public static void main(String[] args){
     Customer customer = getCustomer("hnegal74@umn.edu");
     System.out.println(customer.getName());
+
+    Account account = getAccount(customer.getAccountId());
+    System.out.println(account.getBalance());
 
   }
 
